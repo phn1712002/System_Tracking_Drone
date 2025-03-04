@@ -1,0 +1,10 @@
+# ROS
+build/*
+devel/*
+install/*
+image_docker/*
+bag/*
+_note
+
+# Model
+*.pt

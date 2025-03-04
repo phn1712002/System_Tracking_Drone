@@ -1,0 +1,73 @@
+<launch>
+    <!-- Khởi tạo tham số -->
+    <rosparam param="imgsz">"[640, 640]"</rosparam>
+    
+    <rosparam param="bound_min_vx">-90</rosparam>
+    <rosparam param="bound_max_vx">90</rosparam>
+
+    <rosparam param="bound_min_wx">-90</rosparam>
+    <rosparam param="bound_max_wx">90</rosparam>
+
+    <rosparam param="bound_min_wz">-90</rosparam>
+    <rosparam param="bound_max_wz">90</rosparam>
+
+    <!-- Khởi chạy node yolov5_sort.py -->
+    <!-- <node
+        name="yolov5_sort_node"
+        pkg="yolov5_sort"
+        type="detect.py"
+        output="screen">
+        <param name="weights" value="$(env TRACKING_DRONE_WS)/launch/yolov5n.pt"/>
+        <param name="data" value="$(env TRACKING_DRONE_WS)/launch/coco128.yaml"/>
+    </node> -->
+
+    <!-- Khởi chạy node bag play -->
+    <node
+        name="player"
+        pkg="rosbag"
+        type="play"
+        output="screen"
+        args="--clock $(env TRACKING_DRONE_WS)/bag/yolov5_sort_people_v1.bag">
+    </node>
+
+    <!-- Khởi chạy node calculator_control_ui_node -->
+    <node
+        name="calculator_control_ui_node"
+        pkg="operating_mechanism_control"
+        type="cal_control_with_ui.py"
+        output="screen">
+    </node>
+
+    <!-- Khởi chạy node calculator_control_model_node -->
+    <node
+        name="calculator_control_model_node"
+        pkg="operating_mechanism_control"
+        type="cal_control_with_model.py"
+        output="screen">
+    </node>
+    
+    <!-- Khởi chạy node image_converter_compressed -->
+    <remap from="/camera/image_compressed" to="/image_compressed" />
+    <remap from="/camera/image_raw" to="/image_detect" />
+    <node
+        name="image_converter_compressed_node"
+        pkg="image_tools"
+        type="image_converter_compressed.py"
+        output="screen">
+    </node>
+
+    <!-- Khởi chạy serial_node -->
+    <node
+        name="serial_node"
+        pkg="rosserial_arduino"
+        type="serial_node.py"
+        output="screen">
+        <param name="port" value="/dev/ttyUSB0"/>
+    </node>
+
+    <!-- Khởi chạy rosbridge_websocket -->
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" > 
+        <arg name="port" value="9090"/>
+    </include>
+
+</launch>
