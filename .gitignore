@@ -4,6 +4,7 @@ devel/*
 install/*
 image_docker/*
 bag/*
+.vscode/*
 _note
 
 # Model
