@@ -1,6 +1,0 @@
-opencv-python
-pyside6
-numpy
-pyclean
-roslibpy
-pillow
