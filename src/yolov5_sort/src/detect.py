@@ -44,6 +44,7 @@ def detect_publisher():
     sort_max_age = rospy.get_param('~sort_max_age', 5)
     sort_min_hits = rospy.get_param('~sort_min_hits', 2)
     sort_iou_thresh = rospy.get_param('~sort_iou_thresh', 0.2)
+    flip_image = rospy.get_param('~flip_image ', 1)
     
     # ID tracking
     rospy.set_param("/id_tracking_object", -1)
@@ -51,6 +52,10 @@ def detect_publisher():
     
     
     ##
+    transforms = None
+    if bool(flip_image):
+        transforms = lambda img: cv2.flip(img, 0)
+    
     sort_tracker = Sort(max_age=sort_max_age,
                        min_hits=sort_min_hits,
                        iou_threshold=sort_iou_thresh) 
@@ -71,12 +76,11 @@ def detect_publisher():
 
     if webcam:
         cudnn.benchmark = True  
-        dataset = LoadStreams(source, img_size=imgsz, stride=stride, auto=pt)
+        dataset = LoadStreams(source, img_size=imgsz, stride=stride, auto=pt, flip_sources=bool(flip_image))
     else:
-        dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt)
+        dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, flip_sources=bool(flip_image))
     
     for _, im, im0s, vid_cap, _ in dataset:
-        
         im = torch.from_numpy(im).to(device)
         im = im.half() if half else im.float()  # uint8 to fp16/32
         im /= 255  # 0 - 255 to 0.0 - 1.0

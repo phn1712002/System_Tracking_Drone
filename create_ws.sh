@@ -11,7 +11,6 @@ catkin_make install
 
 # Add bashrc
 #PATH_BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 #echo "export TRACKING_DRONE_WS=$PATH_BASE" >> ~/.bashrc
 #echo "source \$TRACKING_DRONE_WS/devel/setup.sh" >> ~/.bashrc
 

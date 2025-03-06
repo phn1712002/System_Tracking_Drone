@@ -20,15 +20,12 @@
         output="screen">
         <param name="weights" value="$(env TRACKING_DRONE_WS)/launch/yolov5n.pt"/>
         <param name="data" value="$(env TRACKING_DRONE_WS)/launch/coco128.yaml"/>
+        <param name="flip_image" value="1"/>
     </node>
 
-    <!-- Khởi chạy node bag record-->
-    <!-- <node
-        name="recording_node"
-        pkg="rosbag"
-        type="record"
-        output="screen"
-        args="-O $(env TRACKING_DRONE_WS)/bag/recorded_data.bag">
-    </node> -->
+    <!-- Khởi chạy rosbridge_websocket -->
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" > 
+        <arg name="port" value="9090"/>
+    </include>
 
 </launch>

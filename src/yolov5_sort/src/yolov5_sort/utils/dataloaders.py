@@ -187,7 +187,7 @@ class _RepeatSampler:
 
 class LoadImages:
     # YOLOv5 image/video dataloader, i.e. `python detect.py --source image.jpg/vid.mp4`
-    def __init__(self, path, img_size=640, stride=32, auto=True, transforms=None, vid_stride=1):
+    def __init__(self, path, img_size=640, stride=32, auto=True, transforms=None, vid_stride=1, flip_sources=False):
         files = []
         for p in sorted(path) if isinstance(path, (list, tuple)) else [path]:
             p = str(Path(p).resolve())
@@ -213,6 +213,7 @@ class LoadImages:
         self.auto = auto
         self.transforms = transforms  # optional
         self.vid_stride = vid_stride  # video frame-rate stride
+        self.flip_sources = flip_sources
         if any(videos):
             self._new_video(videos[0])  # new video
         else:
@@ -254,6 +255,11 @@ class LoadImages:
             assert im0 is not None, f'Image Not Found {path}'
             s = f'image {self.count}/{self.nf} {path}: '
 
+        im0 = self.imgs.copy()
+        
+        if self.flip_sources:
+            im0 = cv2.flip(im0, 0) # flip
+        
         if self.transforms:
             im = self.transforms(im0)  # transforms
         else:
@@ -287,12 +293,13 @@ class LoadImages:
 
 class LoadStreams:
     # YOLOv5 streamloader, i.e. `python detect.py --source 'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP streams`
-    def __init__(self, sources='streams.txt', img_size=640, stride=32, auto=True, transforms=None, vid_stride=1):
+    def __init__(self, sources='streams.txt', img_size=640, stride=32, auto=True, transforms=None, vid_stride=1, flip_sources=False):
         torch.backends.cudnn.benchmark = True  # faster for fixed-size inference
         self.mode = 'stream'
         self.img_size = img_size
         self.stride = stride
         self.vid_stride = vid_stride  # video frame-rate stride
+        self.flip_sources = flip_sources
         sources = Path(sources).read_text().rsplit() if Path(sources).is_file() else [sources]
         n = len(sources)
         self.sources = [clean_str(x) for x in sources]  # clean source names for later
@@ -357,6 +364,9 @@ class LoadStreams:
             raise StopIteration
 
         im0 = self.imgs.copy()
+        if self.flip_sources:
+            im0 = np.stack([cv2.flip(x, 0) for x in im0])  # flip
+            
         if self.transforms:
             im = np.stack([self.transforms(x) for x in im0])  # transforms
         else:
