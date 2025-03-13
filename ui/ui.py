@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'v1LiZQOh.ui'
+## Form generated from reading UI file 'v1ftDyLC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.2
 ##
@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QLabel,
-    QLineEdit, QMainWindow, QPushButton, QSizePolicy,
-    QSlider, QSpinBox, QStatusBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QMainWindow, QPushButton,
+    QSizePolicy, QSlider, QSpinBox, QStatusBar,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -49,7 +50,7 @@ class Ui_MainWindow(object):
         self.label_video.setLineWidth(5)
         self.layoutWidget = QWidget(self.centralwidget)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(680, 480, 461, 196))
+        self.layoutWidget.setGeometry(QRect(680, 480, 461, 198))
         self.gridLayout_1 = QGridLayout(self.layoutWidget)
         self.gridLayout_1.setObjectName(u"gridLayout_1")
         self.gridLayout_1.setContentsMargins(0, 0, 0, 0)
@@ -63,12 +64,12 @@ class Ui_MainWindow(object):
 
         self.gridLayout_1.addWidget(self.btn_reset_vx, 0, 2, 1, 1)
 
-        self.sli_wx = QSlider(self.layoutWidget)
-        self.sli_wx.setObjectName(u"sli_wx")
-        self.sli_wx.setFont(font1)
-        self.sli_wx.setOrientation(Qt.Orientation.Horizontal)
+        self.sli_wz = QSlider(self.layoutWidget)
+        self.sli_wz.setObjectName(u"sli_wz")
+        self.sli_wz.setFont(font1)
+        self.sli_wz.setOrientation(Qt.Orientation.Horizontal)
 
-        self.gridLayout_1.addWidget(self.sli_wx, 1, 1, 1, 1)
+        self.gridLayout_1.addWidget(self.sli_wz, 1, 1, 1, 1)
 
         self.label_wz = QLabel(self.layoutWidget)
         self.label_wz.setObjectName(u"label_wz")
@@ -76,33 +77,24 @@ class Ui_MainWindow(object):
 
         self.gridLayout_1.addWidget(self.label_wz, 2, 0, 1, 1)
 
-        self.sli_vx = QSlider(self.layoutWidget)
-        self.sli_vx.setObjectName(u"sli_vx")
-        self.sli_vx.setFont(font1)
-        self.sli_vx.setPageStep(1)
-        self.sli_vx.setValue(0)
-        self.sli_vx.setOrientation(Qt.Orientation.Horizontal)
+        self.btn_reset_wx = QPushButton(self.layoutWidget)
+        self.btn_reset_wx.setObjectName(u"btn_reset_wx")
+        self.btn_reset_wx.setFont(font1)
 
-        self.gridLayout_1.addWidget(self.sli_vx, 0, 1, 1, 1)
+        self.gridLayout_1.addWidget(self.btn_reset_wx, 2, 2, 1, 1)
 
         self.btn_reset_wz = QPushButton(self.layoutWidget)
         self.btn_reset_wz.setObjectName(u"btn_reset_wz")
         self.btn_reset_wz.setFont(font1)
 
-        self.gridLayout_1.addWidget(self.btn_reset_wz, 2, 2, 1, 1)
+        self.gridLayout_1.addWidget(self.btn_reset_wz, 1, 2, 1, 1)
 
-        self.btn_reset_wx = QPushButton(self.layoutWidget)
-        self.btn_reset_wx.setObjectName(u"btn_reset_wx")
-        self.btn_reset_wx.setFont(font1)
+        self.sli_wx = QSlider(self.layoutWidget)
+        self.sli_wx.setObjectName(u"sli_wx")
+        self.sli_wx.setFont(font1)
+        self.sli_wx.setOrientation(Qt.Orientation.Horizontal)
 
-        self.gridLayout_1.addWidget(self.btn_reset_wx, 1, 2, 1, 1)
-
-        self.sli_wz = QSlider(self.layoutWidget)
-        self.sli_wz.setObjectName(u"sli_wz")
-        self.sli_wz.setFont(font1)
-        self.sli_wz.setOrientation(Qt.Orientation.Horizontal)
-
-        self.gridLayout_1.addWidget(self.sli_wz, 2, 1, 1, 1)
+        self.gridLayout_1.addWidget(self.sli_wx, 2, 1, 1, 1)
 
         self.label_vx = QLabel(self.layoutWidget)
         self.label_vx.setObjectName(u"label_vx")
@@ -127,6 +119,31 @@ class Ui_MainWindow(object):
         self.btn_save_plot.setFont(font1)
 
         self.gridLayout_1.addWidget(self.btn_save_plot, 4, 0, 1, 3)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.btn_vx_bw = QPushButton(self.layoutWidget)
+        self.btn_vx_bw.setObjectName(u"btn_vx_bw")
+        self.btn_vx_bw.setFont(font1)
+
+        self.horizontalLayout.addWidget(self.btn_vx_bw)
+
+        self.rotation_vx = QSpinBox(self.layoutWidget)
+        self.rotation_vx.setObjectName(u"rotation_vx")
+        self.rotation_vx.setFont(font1)
+        self.rotation_vx.setMinimum(1)
+        self.rotation_vx.setMaximum(100)
+
+        self.horizontalLayout.addWidget(self.rotation_vx)
+
+        self.btn_vx_fw = QPushButton(self.layoutWidget)
+        self.btn_vx_fw.setObjectName(u"btn_vx_fw")
+        self.btn_vx_fw.setFont(font1)
+
+        self.horizontalLayout.addWidget(self.btn_vx_fw)
+
+
+        self.gridLayout_1.addLayout(self.horizontalLayout, 0, 1, 1, 1)
 
         self.layoutWidget1 = QWidget(self.centralwidget)
         self.layoutWidget1.setObjectName(u"layoutWidget1")
@@ -214,13 +231,12 @@ class Ui_MainWindow(object):
         QWidget.setTabOrder(self.edit_ip, self.btn_connect)
         QWidget.setTabOrder(self.btn_connect, self.sb_id_tracking)
         QWidget.setTabOrder(self.sb_id_tracking, self.btn_tracking)
-        QWidget.setTabOrder(self.btn_tracking, self.sli_vx)
-        QWidget.setTabOrder(self.sli_vx, self.btn_reset_vx)
-        QWidget.setTabOrder(self.btn_reset_vx, self.sli_wx)
-        QWidget.setTabOrder(self.sli_wx, self.btn_reset_wx)
-        QWidget.setTabOrder(self.btn_reset_wx, self.sli_wz)
+        QWidget.setTabOrder(self.btn_tracking, self.btn_reset_vx)
+        QWidget.setTabOrder(self.btn_reset_vx, self.sli_wz)
         QWidget.setTabOrder(self.sli_wz, self.btn_reset_wz)
-        QWidget.setTabOrder(self.btn_reset_wz, self.btn_reset_all)
+        QWidget.setTabOrder(self.btn_reset_wz, self.sli_wx)
+        QWidget.setTabOrder(self.sli_wx, self.btn_reset_wx)
+        QWidget.setTabOrder(self.btn_reset_wx, self.btn_reset_all)
 
         self.retranslateUi(MainWindow)
 
@@ -232,18 +248,20 @@ class Ui_MainWindow(object):
         self.label_video.setText("")
         self.btn_reset_vx.setText(QCoreApplication.translate("MainWindow", u"M\u1eb7c \u0111\u1ecbnh", None))
         self.label_wz.setText(QCoreApplication.translate("MainWindow", u"\u0110\u1ed9ng c\u01a1 3", None))
-        self.btn_reset_wz.setText(QCoreApplication.translate("MainWindow", u"M\u1eb7c \u0111\u1ecbnh", None))
         self.btn_reset_wx.setText(QCoreApplication.translate("MainWindow", u"M\u1eb7c \u0111\u1ecbnh", None))
+        self.btn_reset_wz.setText(QCoreApplication.translate("MainWindow", u"M\u1eb7c \u0111\u1ecbnh", None))
         self.label_vx.setText(QCoreApplication.translate("MainWindow", u"\u0110\u1ed9ng c\u01a1 1", None))
         self.btn_reset_all.setText(QCoreApplication.translate("MainWindow", u"\u0110\u1eb7t l\u1ea1i m\u1eb7c \u0111\u1ecbnh t\u1ea5t c\u1ea3", None))
         self.label_wx.setText(QCoreApplication.translate("MainWindow", u"\u0110\u1ed9ng c\u01a1 2", None))
         self.btn_save_plot.setText(QCoreApplication.translate("MainWindow", u"Sao l\u01b0u \u0111\u1ed3 th\u1ecb", None))
+        self.btn_vx_bw.setText(QCoreApplication.translate("MainWindow", u"L\u00f9i", None))
+        self.btn_vx_fw.setText(QCoreApplication.translate("MainWindow", u"Ti\u1ebfn", None))
         self.label_id.setText(QCoreApplication.translate("MainWindow", u"Ch\u1ec9 s\u1ed1 :", None))
         self.btn_tracking.setText(QCoreApplication.translate("MainWindow", u"Theo d\u00f5i", None))
         self.label_count_detect.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_count.setText(QCoreApplication.translate("MainWindow", u"S\u1ed1 l\u01b0\u1ee3ng ph\u00e1t hi\u1ec7n : ", None))
         self.label_ip.setText(QCoreApplication.translate("MainWindow", u"IP :", None))
         self.btn_connect.setText(QCoreApplication.translate("MainWindow", u"K\u1ebft n\u1ed1i", None))
-        self.edit_ip.setText(QCoreApplication.translate("MainWindow", u"192.168.0.1:9090", None))
+        self.edit_ip.setText(QCoreApplication.translate("MainWindow", u"192.168.88.129:9090", None))
     # retranslateUi
 

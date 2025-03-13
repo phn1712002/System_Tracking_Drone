@@ -1,23 +1,23 @@
 #include "Arduino.h"
 
-class Switch
+class MySwitch
 {
   private:
   uint8_t __pin;
 
   public:
-    Switch(uint8_t pin);
+    MySwitch(){};
+    void set(uint8_t pin);
     bool get_stats();
 };
-  
-Switch::Switch(uint8_t pin)
-{
+void MySwitch::set(uint8_t pin){
+
   pinMode(pin, INPUT_PULLUP);
   this->__pin = pin;
 }
 
-bool Switch::get_stats()
+bool MySwitch::get_stats()
 {
-  return digitalRead(this->__pin) == 1 ? false : true;
+  return digitalRead(this->__pin) == LOW ? true : false;
 }
 

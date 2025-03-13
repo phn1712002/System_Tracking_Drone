@@ -2,14 +2,9 @@
     <!-- Khởi tạo tham số -->
     <rosparam param="imgsz">"[640, 640]"</rosparam>
     
-    <rosparam param="bound_min_vx">-90</rosparam>
-    <rosparam param="bound_max_vx">90</rosparam>
-
-    <rosparam param="bound_min_wx">-90</rosparam>
-    <rosparam param="bound_max_wx">90</rosparam>
-
-    <rosparam param="bound_min_wz">-90</rosparam>
-    <rosparam param="bound_max_wz">90</rosparam>
+    <rosparam param="value_reset_link_0">1</rosparam>
+    <rosparam param="angle_reset_link_1">90</rosparam>
+    <rosparam param="angle_reset_link_2">0</rosparam>
 
     <!-- Khởi chạy node yolov5_sort.py -->
     <!-- <node
@@ -22,13 +17,13 @@
     </node> -->
 
     <!-- Khởi chạy node bag play -->
-    <node
+    <!-- <node
         name="player"
         pkg="rosbag"
         type="play"
         output="screen"
-        args="--clock $(env TRACKING_DRONE_WS)/bag/yolov5_sort_people_v1.bag">
-    </node>
+        args="clock $(env TRACKING_DRONE_WS)/bag/yolov5_sort_people_v1.bag">
+    </node> -->
 
     <!-- Khởi chạy node calculator_control_ui_node -->
     <node

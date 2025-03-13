@@ -6,7 +6,7 @@ class CalculatorControl:
     def __init__(self):
         rospy.init_node('calculator_control_model_node', anonymous=True)
         self.center_bbox_tracking_sub = rospy.Subscriber("/center_bbox_tracking", Point, self.calculator_callback)
-        self.velocity_control_pub = rospy.Publisher("/velocity_control", Twist, queue_size = 10)
+        self.velocity_control_pub = rospy.Publisher("/velocity_control_with_model", Twist, queue_size = 10)
         self.velocity_max = 1
         
     def function_calculator_velocity(self, error, velocity_max, error_max):

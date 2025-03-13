@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "DRV8825.h"
 #include "Servo.h"
+#include "switch.hpp"
 /////////////////////////////////////////ServoMotor/////////////////////////////////////////
 class ServoMotor
 {
@@ -9,52 +10,92 @@ class ServoMotor
     int __bound_max;
     uint8_t __pin;
     Servo servo;
+    int __angle_current = -1;
   public:
     ServoMotor();
-    void attach(uint8_t pin, int bound_min, int bound_max);
+    void attach(uint8_t pin);
     void write(int angle);
+    int read();
 };
 ServoMotor::ServoMotor(){}
-void ServoMotor::attach(uint8_t pin, int bound_min, int bound_max)
+void ServoMotor::attach(uint8_t pin)
 {
     this->__pin = pin;
-    this->__bound_min = bound_min;
-    this->__bound_max = bound_max;
-    this->servo.attach(pin, bound_min ,bound_max);
+    this->servo.attach(pin);
+    this->__angle_current = 0;
 };
 void ServoMotor::write(int angle)
 {
     this->servo.write(angle);
+    this->__angle_current = angle;
+}
+int ServoMotor::read()
+{
+    return this->__angle_current;
 }
 /////////////////////////////////////////StepperMotor/////////////////////////////////////////
+
+const uint8_t STEPPER_MOTOR_FW = 0;  
+const uint8_t STEPPER_MOTOR_BW = 1;
+
 class StepperMotor
 {
   private:
     uint8_t __dir_pin;
     uint8_t __step_pin;
+    MySwitch __fw;
+    MySwitch __bw;
+    uint8_t __direction_current = 0;
+    int   __pul_per_rev;
 
   public:
     DRV8825 stepper;
-    StepperMotor(uint8_t dir_pin, uint8_t step_dir);
-    void step(uint8_t vector, int sleep);
+    StepperMotor(){};
+    begin(uint8_t dir_pin, uint8_t step_pin, uint8_t fw_pin, uint8_t bw_pin, int pul_per_rev);
+    bool step(uint8_t direction);
+    bool step_rotations(uint8_t direction, float num_rotations, unsigned int time_delay_control_us);
 };
-StepperMotor::StepperMotor(uint8_t dir_pin, uint8_t step_dir)
+StepperMotor::begin(uint8_t dir_pin, uint8_t step_pin, uint8_t fw_pin, uint8_t bw_pin, int pul_per_rev)
 {   
     this->__dir_pin = dir_pin;
-    this->__step_pin = step_dir;
-    this->stepper.begin(dir_pin, step_dir);
+    this->__step_pin = step_pin;
+    this->stepper.begin(dir_pin, step_pin);
+    this->__fw.set(fw_pin);
+    this->__bw.set(bw_pin);
+    this->__pul_per_rev = pul_per_rev;
 };
-void StepperMotor::step(uint8_t vector, int sleep = 50)
+
+bool StepperMotor::step(uint8_t direction = STEPPER_MOTOR_FW)
 {
-    if (vector != 0)
-    {
-        uint8_t clock_wire = vector > 0 ? DRV8825_CLOCK_WISE: DRV8825_COUNTERCLOCK_WISE;
-        stepper.setDirection(clock_wire);
-        delay(sleep);
-        stepper.step();
-        delay(sleep);
-    }
-}
+  if(this->__direction_current != direction) 
+  {
+    stepper.setDirection(direction);
+    this->__direction_current = direction;
+  }
+
+  if(direction == DRV8825_CLOCK_WISE && this->__fw.get_stats() == false)
+  {
+    stepper.step();
+    return true;
+  }
+  else if (direction == DRV8825_COUNTERCLOCK_WISE && this->__bw.get_stats() == false)
+  {
+    stepper.step();
+    return true;
+  }
+
+  return false;
+};
+
+bool StepperMotor::step_rotations(uint8_t direction = STEPPER_MOTOR_FW, float num_rotations = 1, unsigned int time_delay_control_us = 30)
+{
+  for (unsigned int i = 0; i < (num_rotations * this->__pul_per_rev); i++)
+  {
+    if(this->step(direction) == false) return false;
+    delayMicroseconds(time_delay_control_us);
+  }
+  return true;
+};
 
 
 

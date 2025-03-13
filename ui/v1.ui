@@ -81,7 +81,7 @@
       <x>680</x>
       <y>480</y>
       <width>461</width>
-      <height>196</height>
+      <height>198</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_1">
@@ -100,7 +100,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSlider" name="sli_wx">
+      <widget class="QSlider" name="sli_wz">
        <property name="font">
         <font>
          <pointsize>14</pointsize>
@@ -127,41 +127,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QSlider" name="sli_vx">
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-         <bold>true</bold>
-         <hintingpreference>PreferDefaultHinting</hintingpreference>
-        </font>
-       </property>
-       <property name="pageStep">
-        <number>1</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="2">
-      <widget class="QPushButton" name="btn_reset_wz">
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-         <bold>true</bold>
-         <hintingpreference>PreferDefaultHinting</hintingpreference>
-        </font>
-       </property>
-       <property name="text">
-        <string>Mặc định</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
       <widget class="QPushButton" name="btn_reset_wx">
        <property name="font">
         <font>
@@ -175,8 +141,22 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="btn_reset_wz">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <bold>true</bold>
+         <hintingpreference>PreferDefaultHinting</hintingpreference>
+        </font>
+       </property>
+       <property name="text">
+        <string>Mặc định</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="1">
-      <widget class="QSlider" name="sli_wz">
+      <widget class="QSlider" name="sli_wx">
        <property name="font">
         <font>
          <pointsize>14</pointsize>
@@ -244,6 +224,55 @@
         <string>Sao lưu đồ thị</string>
        </property>
       </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="btn_vx_bw">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <bold>true</bold>
+           <hintingpreference>PreferDefaultHinting</hintingpreference>
+          </font>
+         </property>
+         <property name="text">
+          <string>Lùi</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="rotation_vx">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <bold>true</bold>
+           <hintingpreference>PreferDefaultHinting</hintingpreference>
+          </font>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_vx_fw">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <bold>true</bold>
+           <hintingpreference>PreferDefaultHinting</hintingpreference>
+          </font>
+         </property>
+         <property name="text">
+          <string>Tiến</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -400,7 +429,7 @@
         </font>
        </property>
        <property name="text">
-        <string>192.168.0.1:9090</string>
+        <string>192.168.88.129:9090</string>
        </property>
       </widget>
      </item>
@@ -418,12 +447,11 @@
   <tabstop>btn_connect</tabstop>
   <tabstop>sb_id_tracking</tabstop>
   <tabstop>btn_tracking</tabstop>
-  <tabstop>sli_vx</tabstop>
   <tabstop>btn_reset_vx</tabstop>
-  <tabstop>sli_wx</tabstop>
-  <tabstop>btn_reset_wx</tabstop>
   <tabstop>sli_wz</tabstop>
   <tabstop>btn_reset_wz</tabstop>
+  <tabstop>sli_wx</tabstop>
+  <tabstop>btn_reset_wx</tabstop>
   <tabstop>btn_reset_all</tabstop>
  </tabstops>
  <resources/>

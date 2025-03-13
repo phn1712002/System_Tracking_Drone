@@ -19,9 +19,11 @@ class UI_Main(Ui_MainWindow):
         self.btn_reset_wz.setDisabled(True)
         self.btn_tracking.setDisabled(True)
         self.sb_id_tracking.setDisabled(True)
-        self.sli_vx.setDisabled(True)
+        self.btn_vx_bw.setDisabled(True)
+        self.btn_vx_fw.setDisabled(True)
         self.sli_wx.setDisabled(True)
         self.sli_wz.setDisabled(True)
+        self.rotation_vx.setDisabled(True)
 
         # ROS Noetic
         self.ros_client = None
@@ -44,14 +46,17 @@ class UI_Main(Ui_MainWindow):
         self.thread_update_label_count_detect = None
         
         # sli
+        self.reset_clicked = False
         self.sli_vx_topic = None
-        self.sli_vx_value_last = None
+        self.reset_vx_topic = None
         
         self.sli_wx_topic = None
-        self.sli_wx_value_last = None
+        self.angle_reset_link_2 = None
+        self.reset_wx_topic = None
         
         self.sli_wz_topic = None
-        self.sli_wz_value_last = None
+        self.angle_reset_link_1 = None
+        self.reset_wz_topic = None
         
         # param
         self.ros_param = None
@@ -62,15 +67,17 @@ class UI_Main(Ui_MainWindow):
         
         self.btn_connect.clicked.connect(self.process_btn_connect_clicked)
         
-        self.btn_reset_all.clicked.connect(lambda x: self.process_btn_reset_clicked(self.btn_reset_vx, 'all'))
-        self.btn_reset_vx.clicked.connect(lambda x: self.process_btn_reset_clicked(self.btn_reset_vx, 'vx'))
-        self.btn_reset_wx.clicked.connect(lambda x: self.process_btn_reset_clicked(self.btn_reset_wx, 'wx'))
-        self.btn_reset_wz.clicked.connect(lambda x: self.process_btn_reset_clicked(self.btn_reset_wz, 'wz'))
+        self.btn_reset_all.clicked.connect(lambda : self.process_btn_reset_clicked('all'))
+        self.btn_reset_vx.clicked.connect(lambda : self.process_btn_reset_clicked('vx'))
+        self.btn_reset_wx.clicked.connect(lambda : self.process_btn_reset_clicked('wx'))
+        self.btn_reset_wz.clicked.connect(lambda : self.process_btn_reset_clicked('wz'))
         
-        self.sli_vx.valueChanged[int].connect(lambda value: self.process_sli_value_changed(value, 'vx'))
+        self.btn_vx_fw.clicked.connect(lambda : self.process_btn_vx_clicked('fw'))
+        self.btn_vx_bw.clicked.connect(lambda : self.process_btn_vx_clicked('bw'))
+        
         self.sli_wx.valueChanged[int].connect(lambda value: self.process_sli_value_changed(value, 'wx'))
         self.sli_wz.valueChanged[int].connect(lambda value: self.process_sli_value_changed(value, 'wz'))
-
+    
     @Slot(str)
     def update_label_count_detect(self, txt):
         self.label_count_detect.setText(txt)
@@ -88,9 +95,11 @@ class UI_Main(Ui_MainWindow):
             self.btn_reset_wx.setDisabled(status)
             self.btn_reset_wz.setDisabled(status)
             self.sb_id_tracking.setDisabled(status)
-            self.sli_vx.setDisabled(status)
+            self.btn_vx_bw.setDisabled(status)
+            self.btn_vx_fw.setDisabled(status)
             self.sli_wx.setDisabled(status)
             self.sli_wz.setDisabled(status)
+            self.rotation_vx.setDisabled(status)
         
         self.count_clicked_btn_tracking += 1
         if self.count_clicked_btn_tracking % 2:
@@ -133,9 +142,11 @@ class UI_Main(Ui_MainWindow):
             self.btn_reset_wz.setDisabled(status)
             self.btn_tracking.setDisabled(status)
             self.sb_id_tracking.setDisabled(status)
-            self.sli_vx.setDisabled(status)
+            self.btn_vx_bw.setDisabled(status)
+            self.btn_vx_fw.setDisabled(status)
             self.sli_wx.setDisabled(status)
             self.sli_wz.setDisabled(status)
+            self.rotation_vx.setDisabled(status)
             self.edit_ip.setDisabled(not status)
         
         self.count_clicked_btn_connect += 1 
@@ -155,9 +166,8 @@ class UI_Main(Ui_MainWindow):
                 self.btn_connect.setText("Ngắt kết nối")
                 
                 
-                
                 # Video setup
-                self.thread_update_video = VideoThread(self.ros_client, '/image_compressed')
+                self.thread_update_video = VideoThread(self.ros_client, '/image_comclicked')
                 self.thread_update_video.start()
                 self.thread_update_video.change_pixmap_signal.connect(self.update_image)
                 
@@ -168,25 +178,21 @@ class UI_Main(Ui_MainWindow):
                 
                 # Slider setup
                 self.sli_vx_topic = roslibpy.Topic(self.ros_client, '/sli_vx', 'std_msgs/Int32')
-                set_sli_value(self.sli_vx, 
-                              int(self.ros_client.get_param('/bound_min_vx')), 
-                              int(self.ros_client.get_param('/bound_max_vx')), 
-                              0)
-                self.sli_vx_value_last = 0
                 
                 self.sli_wx_topic = roslibpy.Topic(self.ros_client, '/sli_wx', 'std_msgs/Int32')
-                set_sli_value(self.sli_wx, 
-                              int(self.ros_client.get_param('/bound_min_wx')), 
-                              int(self.ros_client.get_param('/bound_max_wx')), 
-                              0)
-                self.sli_wx_value_last = 0
+                self.angle_reset_link_2 = int(self.ros_client.get_param('/angle_reset_link_2'))
+                set_sli_value(self.sli_wx, 0, 180, self.angle_reset_link_2)
+                
                 
                 self.sli_wz_topic = roslibpy.Topic(self.ros_client, '/sli_wz', 'std_msgs/Int32')
-                set_sli_value(self.sli_wz, 
-                              int(self.ros_client.get_param('/bound_min_wz')), 
-                              int(self.ros_client.get_param('/bound_max_wz')), 
-                              0)
-                self.sli_vx_value_last = 0
+                self.angle_reset_link_1 = int(self.ros_client.get_param('/angle_reset_link_1'))
+                set_sli_value(self.sli_wz, 0, 180, self.angle_reset_link_1)
+                
+                
+                # Btn reset topic 
+                self.reset_vx_topic = roslibpy.Topic(self.ros_client, '/reset_vx', 'std_msgs/Bool')
+                self.reset_wx_topic = roslibpy.Topic(self.ros_client, '/reset_wx', 'std_msgs/Bool')
+                self.reset_wz_topic = roslibpy.Topic(self.ros_client, '/reset_wz', 'std_msgs/Bool')
                 
             else:
                 self.count_clicked_btn_connect -= 1
@@ -204,29 +210,39 @@ class UI_Main(Ui_MainWindow):
  
         return self.btn_connect.setDisabled(False)
     
-    def process_btn_reset_clicked(self, btn, mode='all'):
-        btn.setDisabled(True)
+    def process_btn_reset_clicked(self, mode='all'):
+        self.reset_clicked = True
         if mode == 'vx':
-            pass
+            self.reset_vx_topic.publish(roslibpy.Message({'data': True}))
+            
         elif mode == 'wx':
-            pass
+            self.sli_wx.setValue(self.angle_reset_link_2)
+            self.reset_wx_topic.publish(roslibpy.Message({'data': True}))
+            
         elif mode == 'wz':
-            pass
-        elif mode == 'all':
-            pass
-        return btn.setDisabled(False)
+            self.sli_wz.setValue(self.angle_reset_link_1)
+            self.reset_wz_topic.publish(roslibpy.Message({'data': True}))
+            
+        elif mode == 'all': 
+            self.reset_vx_topic.publish(roslibpy.Message({'data': True}))
+            self.reset_wz_topic.publish(roslibpy.Message({'data': True}))
+            self.reset_wx_topic.publish(roslibpy.Message({'data': True}))
+            
+            self.sli_wx.setValue(self.angle_reset_link_2)
+            self.sli_wz.setValue(self.angle_reset_link_1)
+        self.reset_clicked = False
 
-    def process_sli_value_changed(self, value, mode='vx'):
-        if self.ros_client.is_connected:
-            if mode == 'vx':
-                if self.sli_vx_value_last is not None:
-                    self.sli_vx_topic.publish(roslibpy.Message({'data': value - self.sli_vx_value_last})) 
-                    self.sli_vx_value_last = value
-            elif mode == 'wx':
-                if self.sli_wx_value_last is not None:
-                    self.sli_wx_topic.publish(roslibpy.Message({'data': value - self.sli_wx_value_last}))
-                    self.sli_wx_value_last = value 
+
+    def process_sli_value_changed(self, value, mode='wx'):
+        if self.ros_client.is_connected and self.reset_clicked == False:
+            if mode == 'wx':
+                self.sli_wx_topic.publish(roslibpy.Message({'data': value}))
             elif mode == 'wz':
-                if self.sli_wz_value_last is not None:
-                    self.sli_wz_topic.publish(roslibpy.Message({'data': value - self.sli_wz_value_last}))
-                    self.sli_wz_value_last = value 
+                self.sli_wz_topic.publish(roslibpy.Message({'data': value}))
+    
+    def process_btn_vx_clicked(self, mode='bw'):    
+        if self.ros_client.is_connected:
+            if mode == 'bw':
+                self.sli_vx_topic.publish(roslibpy.Message({'data': -self.rotation_vx.value()}))
+            elif mode == 'fw':
+                self.sli_vx_topic.publish(roslibpy.Message({'data': self.rotation_vx.value()}))
