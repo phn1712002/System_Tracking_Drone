@@ -4,3 +4,4 @@ numpy
 pyclean
 roslibpy
 pillow
+PyInstaller

@@ -11,18 +11,29 @@
 
 //
 #include "tools.hpp"
-#include "motor.hpp"
+#include "motor.hpp"`
 
 // ROS 
 ros::NodeHandle nh;
 
-// // DEBUG
-// std_msgs::String debug_mcu_msg;
-// ros::Publisher debug_mcu_pub("/debug_mcu", &debug_mcu_msg);
-// void view_debug_mcu(const char* msg){
-//   debug_mcu_msg.data = msg;
-//   debug_mcu_pub.publish(&debug_mcu_msg);
-// }
+// DEBUG
+std_msgs::String debug_mcu_msg;
+ros::Publisher debug_mcu_pub("/debug_mcu", &debug_mcu_msg);
+void view_debug_mcu(const char* msg){
+  debug_mcu_msg.data = msg;
+  debug_mcu_pub.publish(&debug_mcu_msg);
+}
+
+geometry_msgs::Twist value_motor_current_msg;
+ros::Publisher value_motor_current_pub("/value_motor_current", &value_motor_current_msg);
+void publish_value_motor_current(float angle_link_0, int angle_link_1, int angle_link_2)
+{
+  value_motor_current_msg.linear.x = angle_link_0;
+  value_motor_current_msg.angular.x = angle_link_2;
+  value_motor_current_msg.angular.z = angle_link_1;
+  
+  value_motor_current_pub.publish(&value_motor_current_msg);
+}
 
 // TOOLS
 ExecutionTimer timer;
@@ -37,6 +48,8 @@ ExecutionTimer timer;
 # define PIN_DIR_LINK_0 2
 # define PIN_STEP_LINK_0 6
 # define PULSES_PER_REVOLUTION 3200
+# define ANGLE_MIN_PER_STEP 0
+# define ANGLE_MAX_PER_STEP 10
 ServoMotor link_2;
 ServoMotor link_1;
 StepperMotor link_0;
@@ -66,7 +79,7 @@ void cb_velocity_control_with_ui(const geometry_msgs::Twist& msg)
     int dir = STEPPER_MOTOR_BW;
     if(sign == 1) dir = STEPPER_MOTOR_FW;
 
-    link_0.step_rotations(dir, abs_value, 30);
+    link_0.step_rotations(dir, abs_value, time_delay_control_link_0);
   }
   if(msg.angular.z != 0) link_1.write(int(msg.angular.z));
   if(msg.angular.x != 0) link_2.write(int(msg.angular.x));
@@ -75,8 +88,46 @@ ros::Subscriber<geometry_msgs::Twist> velocity_control_with_ui_sub("velocity_con
 
 void cb_velocity_control_with_model(const geometry_msgs::Twist& msg) 
 {
-  // TODO
+  float num_rotation_step = 0;
+  // Control Link 0
+  if(msg.linear.x != 0)
+  {
+    float value_control = msg.linear.x;
+    int sign = value_control / abs(value_control);
+    float abs_value_control = abs(value_control);
+    int dir = STEPPER_MOTOR_BW;
+    if(sign == 1) dir = STEPPER_MOTOR_FW;
+
+    num_rotation_step = link_0.step_rotations(dir, abs_value_control, time_delay_control_link_0);
+  }
+
+  // Control Link 1
+  if(msg.angular.z != 0)
+  {
+    int angle_current = link_1.read();
+    int value_control = int(msg.angular.z);
+    int abs_value_control = abs(value_control);
+    int sign = value_control / abs_value_control;
+
+    int value_control_current = map(abs_value_control, 0, 1, ANGLE_MIN_PER_STEP, ANGLE_MAX_PER_STEP);
+    link_1.write(angle_current + (value_control_current * sign));
+  }
+
+  // Control Link 2
+  if(msg.angular.x != 0)
+  {
+    int angle_current = link_2.read();
+    int value_control = int(msg.angular.x);
+    int abs_value_control = abs(value_control);
+    int sign = value_control / abs_value_control;
+
+    int value_control_current = map(abs_value_control, 0, 1, ANGLE_MIN_PER_STEP, ANGLE_MAX_PER_STEP);
+    link_2.write(angle_current + (value_control_current * sign));
+  }
+
+  publish_value_motor_current(num_rotation_step, link_1.read(), link_2.read());
 }
+
 ros::Subscriber<geometry_msgs::Twist> velocity_control_with_model_sub("velocity_control_with_model", &cb_velocity_control_with_model);
 
 void cb_reset_vx(const std_msgs::Bool& msg)
@@ -113,7 +164,8 @@ ros::Subscriber<std_msgs::Bool> reset_wz("reset_wz", &cb_reset_wz);
 void setup() {
   // Init
   nh.initNode();
-  // nh.advertise(debug_mcu_pub);
+  nh.advertise(debug_mcu_pub);
+  nh.advertise(value_motor_current_pub);
   nh.subscribe(velocity_control_with_ui_sub);
   nh.subscribe(velocity_control_with_model_sub);
   nh.subscribe(reset_vx);

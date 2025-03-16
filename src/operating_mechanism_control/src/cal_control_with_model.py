@@ -30,9 +30,9 @@ class CalculatorControl:
         y_error = y_center - y 
         
         if x_error > 0:
-            w_x = -self.function_calculator_velocity(x_error, velocity_max = self.velocity_max , error_max=(x_max/2))
-        else:
             w_x = self.function_calculator_velocity(x_error, velocity_max = self.velocity_max , error_max=(x_max/2))
+        else:
+            w_x = -self.function_calculator_velocity(x_error, velocity_max = self.velocity_max , error_max=(x_max/2))
 
         if y_error > 0:
             t_y = -self.function_calculator_velocity(y_error, velocity_max = self.velocity_max , error_max=(x_max/2))

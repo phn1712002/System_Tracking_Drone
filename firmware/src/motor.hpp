@@ -53,7 +53,7 @@ class StepperMotor
     StepperMotor(){};
     begin(uint8_t dir_pin, uint8_t step_pin, uint8_t fw_pin, uint8_t bw_pin, int pul_per_rev);
     bool step(uint8_t direction);
-    bool step_rotations(uint8_t direction, float num_rotations, unsigned int time_delay_control_us);
+    float step_rotations(uint8_t direction, float num_rotations, unsigned int time_delay_control_us);
 };
 StepperMotor::begin(uint8_t dir_pin, uint8_t step_pin, uint8_t fw_pin, uint8_t bw_pin, int pul_per_rev)
 {   
@@ -87,14 +87,23 @@ bool StepperMotor::step(uint8_t direction = STEPPER_MOTOR_FW)
   return false;
 };
 
-bool StepperMotor::step_rotations(uint8_t direction = STEPPER_MOTOR_FW, float num_rotations = 1, unsigned int time_delay_control_us = 30)
+float StepperMotor::step_rotations(uint8_t direction = STEPPER_MOTOR_FW, float num_rotations = 1, unsigned int time_delay_control_us = 30)
 {
-  for (unsigned int i = 0; i < (num_rotations * this->__pul_per_rev); i++)
+  float rotaions_current = 0;
+  for (unsigned int pulse = 0; pulse < (num_rotations * this->__pul_per_rev); pulse++)
   {
-    if(this->step(direction) == false) return false;
-    delayMicroseconds(time_delay_control_us);
+    if(this->step(direction))
+    {
+      rotaions_current = float(pulse / this->__pul_per_rev);
+      delayMicroseconds(time_delay_control_us);
+    }
+    else
+    {
+      return rotaions_current;
+    }
+    
   }
-  return true;
+  return rotaions_current;
 };
 
 

@@ -7,23 +7,15 @@
     <rosparam param="angle_reset_link_2">0</rosparam>
 
     <!-- Khởi chạy node yolov5_sort.py -->
-    <!-- <node
+    <node
         name="yolov5_sort_node"
         pkg="yolov5_sort"
         type="detect.py"
         output="screen">
         <param name="weights" value="$(env TRACKING_DRONE_WS)/launch/yolov5n.pt"/>
         <param name="data" value="$(env TRACKING_DRONE_WS)/launch/coco128.yaml"/>
-    </node> -->
-
-    <!-- Khởi chạy node bag play -->
-    <!-- <node
-        name="player"
-        pkg="rosbag"
-        type="play"
-        output="screen"
-        args="clock $(env TRACKING_DRONE_WS)/bag/yolov5_sort_people_v1.bag">
-    </node> -->
+        <param name="flip_image" value="0"/>
+    </node>
 
     <!-- Khởi chạy node calculator_control_ui_node -->
     <node

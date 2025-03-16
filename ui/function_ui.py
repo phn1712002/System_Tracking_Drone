@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QMessageBox
 from PySide6.QtGui import QPixmap
 from ui import Ui_MainWindow
 from video import (VideoThread, QImage)
-from infor import TextThread  
+from infor import (TextThread, Angle_Motor_Thread)
 import roslibpy
 
 class UI_Main(Ui_MainWindow):
@@ -45,6 +45,9 @@ class UI_Main(Ui_MainWindow):
         # label_count_detect
         self.thread_update_label_count_detect = None
         
+        self.thread_update_angle_motor_detect = None
+        self.control_detect = False
+        
         # sli
         self.reset_clicked = False
         self.sli_vx_topic = None
@@ -78,6 +81,13 @@ class UI_Main(Ui_MainWindow):
         self.sli_wx.valueChanged[int].connect(lambda value: self.process_sli_value_changed(value, 'wx'))
         self.sli_wz.valueChanged[int].connect(lambda value: self.process_sli_value_changed(value, 'wz'))
     
+    @Slot(list)
+    def update_angle_motor_detect(self, list_value):
+        if self.control_detect:
+            angle_link_1_current, angle_link_2_current = list_value[0], list_value[1]
+            self.sli_wx.setValue(angle_link_2_current)
+            self.sli_wz.setValue(angle_link_1_current)
+    
     @Slot(str)
     def update_label_count_detect(self, txt):
         self.label_count_detect.setText(txt)
@@ -110,11 +120,13 @@ class UI_Main(Ui_MainWindow):
 
             id_tracking_object = self.sb_id_tracking.value()
             self.ros_client.set_param("id_tracking_object", id_tracking_object)
+            self.control_detect = True
         else: 
             set_disabled(self, False)
             self.btn_tracking.setText("Theo dõi")
             self.btn_tracking.setStyleSheet("background-color: green;")
             self.ros_client.set_param("id_tracking_object", self.value_un_tracking)
+            self.control_detect = False
             
         return self.btn_tracking.setDisabled(False)
     
@@ -167,7 +179,7 @@ class UI_Main(Ui_MainWindow):
                 
                 
                 # Video setup
-                self.thread_update_video = VideoThread(self.ros_client, '/image_comclicked')
+                self.thread_update_video = VideoThread(self.ros_client, '/image_compressed')
                 self.thread_update_video.start()
                 self.thread_update_video.change_pixmap_signal.connect(self.update_image)
                 
@@ -176,6 +188,10 @@ class UI_Main(Ui_MainWindow):
                 self.thread_update_label_count_detect.start()
                 self.thread_update_label_count_detect.change_value_signal.connect(self.update_label_count_detect)
                 
+                # 
+                self.thread_update_angle_motor_detect = Angle_Motor_Thread(self.ros_client, '/value_motor_current')
+                self.thread_update_angle_motor_detect.start()
+                self.thread_update_angle_motor_detect.change_value_signal.connect(self.update_angle_motor_detect)
                 # Slider setup
                 self.sli_vx_topic = roslibpy.Topic(self.ros_client, '/sli_vx', 'std_msgs/Int32')
                 
@@ -212,21 +228,22 @@ class UI_Main(Ui_MainWindow):
     
     def process_btn_reset_clicked(self, mode='all'):
         self.reset_clicked = True
+        topic_send_reset_clicked = roslibpy.Message({'data': True})
         if mode == 'vx':
-            self.reset_vx_topic.publish(roslibpy.Message({'data': True}))
+            self.reset_vx_topic.publish(topic_send_reset_clicked)
             
         elif mode == 'wx':
             self.sli_wx.setValue(self.angle_reset_link_2)
-            self.reset_wx_topic.publish(roslibpy.Message({'data': True}))
+            self.reset_wx_topic.publish(topic_send_reset_clicked)
             
         elif mode == 'wz':
             self.sli_wz.setValue(self.angle_reset_link_1)
-            self.reset_wz_topic.publish(roslibpy.Message({'data': True}))
+            self.reset_wz_topic.publish(topic_send_reset_clicked)
             
         elif mode == 'all': 
-            self.reset_vx_topic.publish(roslibpy.Message({'data': True}))
-            self.reset_wz_topic.publish(roslibpy.Message({'data': True}))
-            self.reset_wx_topic.publish(roslibpy.Message({'data': True}))
+            self.reset_vx_topic.publish(topic_send_reset_clicked)
+            self.reset_wz_topic.publish(topic_send_reset_clicked)
+            self.reset_wx_topic.publish(topic_send_reset_clicked)
             
             self.sli_wx.setValue(self.angle_reset_link_2)
             self.sli_wz.setValue(self.angle_reset_link_1)
@@ -234,7 +251,7 @@ class UI_Main(Ui_MainWindow):
 
 
     def process_sli_value_changed(self, value, mode='wx'):
-        if self.ros_client.is_connected and self.reset_clicked == False:
+        if self.ros_client.is_connected and self.reset_clicked == False and self.control_detect == False:
             if mode == 'wx':
                 self.sli_wx_topic.publish(roslibpy.Message({'data': value}))
             elif mode == 'wz':

@@ -44,17 +44,12 @@ def detect_publisher():
     sort_max_age = rospy.get_param('~sort_max_age', 5)
     sort_min_hits = rospy.get_param('~sort_min_hits', 2)
     sort_iou_thresh = rospy.get_param('~sort_iou_thresh', 0.2)
-    flip_image = rospy.get_param('~flip_image ', 1)
+    flip_image = rospy.get_param('~flip_image ', 0)
     
     # ID tracking
     rospy.set_param("/id_tracking_object", -1)
     count_bbox_detect = 0
     
-    
-    ##
-    transforms = None
-    if bool(flip_image):
-        transforms = lambda img: cv2.flip(img, 0)
     
     sort_tracker = Sort(max_age=sort_max_age,
                        min_hits=sort_min_hits,

@@ -2,15 +2,9 @@
     <!-- Khởi tạo tham số -->
     <rosparam param="imgsz">"[640, 640]"</rosparam>
     
-    <rosparam param="bound_min_vx">-90</rosparam>
-    <rosparam param="bound_max_vx">90</rosparam>
-
-    <rosparam param="bound_min_wx">-90</rosparam>
-
-    <rosparam param="bound_max_wx">90</rosparam>
-
-    <rosparam param="bound_min_wz">-90</rosparam>
-    <rosparam param="bound_max_wz">90</rosparam>
+    <rosparam param="value_reset_link_0">1</rosparam>
+    <rosparam param="angle_reset_link_1">90</rosparam>
+    <rosparam param="angle_reset_link_2">0</rosparam>
 
     <!-- Khởi chạy node yolov5_sort.py -->
     <node
@@ -20,7 +14,7 @@
         output="screen">
         <param name="weights" value="$(env TRACKING_DRONE_WS)/launch/yolov5n.pt"/>
         <param name="data" value="$(env TRACKING_DRONE_WS)/launch/coco128.yaml"/>
-        <param name="flip_image" value="1"/>
+        <param name="flip_image" value="0"/>
     </node>
 
     <!-- Khởi chạy rosbridge_websocket -->
