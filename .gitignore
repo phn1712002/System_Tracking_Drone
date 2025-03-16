@@ -9,3 +9,6 @@ _note
 
 # Model
 *.pt
+
+# Error
+firmware/lib/DRV8825/*
